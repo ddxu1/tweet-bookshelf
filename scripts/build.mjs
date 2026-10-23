@@ -131,6 +131,7 @@ fs.mkdirSync(path.join(outputPath, 'data'), { recursive: true });
 for (const file of ['index.html', 'styles.css', 'app.js']) {
   fs.copyFileSync(path.join(root, 'src', file), path.join(outputPath, file));
 }
+fs.cpSync(path.join(root, 'src', 'fonts'), path.join(outputPath, 'fonts'), { recursive: true });
 fs.writeFileSync(path.join(outputPath, 'data', 'tweets.json'), `${JSON.stringify(unique, null, 2)}\n`);
 fs.writeFileSync(path.join(outputPath, 'build-meta.json'), `${JSON.stringify({
   generated_at: new Date().toISOString(),

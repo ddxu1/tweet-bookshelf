@@ -1,6 +1,8 @@
-const state = { tweets: [], query: '', category: 'all', compact: false, previewedId: null, saveRanks: new Map() };
+const state = { tweets: [], categories: [], query: '', category: 'all', compact: false, previewedId: null, saveRanks: new Map() };
 const touchMode = window.matchMedia('(hover: none), (pointer: coarse)').matches;
-const palette = ['#8f4d43','#b18a4d','#3e6960','#6f547c','#35627b','#8d6a3b','#516f44','#915e6c','#4f658a','#7b4b35'];
+let previewOwner = null;
+let previewTimer;
+const palette = ['#995b46', '#796747', '#657054', '#536c75', '#89564e', '#656e61', '#826447', '#526960'];
 const elements = {
   library: document.querySelector('#library'), loading: document.querySelector('#loading-card'), empty: document.querySelector('#empty-state'),
   search: document.querySelector('#search'), filter: document.querySelector('#category-filter'), count: document.querySelector('#book-count'),
@@ -10,7 +12,11 @@ const elements = {
   dialogLink: document.querySelector('#dialog-link'), detailCover: document.querySelector('#detail-cover'), copy: document.querySelector('#copy-link'),
   preview: document.querySelector('#book-preview'), previewCategory: document.querySelector('#preview-category'),
   previewText: document.querySelector('#preview-text'), previewAuthor: document.querySelector('#preview-author'),
-  previewTags: document.querySelector('#preview-tags'), previewHint: document.querySelector('#preview-hint')
+  previewTags: document.querySelector('#preview-tags'), previewHint: document.querySelector('#preview-hint'),
+  nav: document.querySelector('#category-nav'), categoryLinks: document.querySelector('#category-links'),
+  total: document.querySelector('#total-count'), countLabel: document.querySelector('#count-label'),
+  collectionTitle: document.querySelector('#collection-title'), coverTitle: document.querySelector('#cover-title'),
+  coverCategory: document.querySelector('#cover-category')
 };
 
 const hash = (value) => [...String(value)].reduce((total, char) => ((total << 5) - total) + char.charCodeAt(0), 0);
@@ -29,6 +35,10 @@ const bookTitle = (tweet) => {
 };
 
 function showPreview(tweet, book) {
+  clearTimeout(previewTimer);
+  previewOwner?.removeAttribute('aria-describedby');
+  previewOwner = book;
+  book.setAttribute('aria-describedby', 'book-preview');
   const text = (tweet.article_preview || tweet.text).replace(/https?:\/\/\S+/g, '').replace(/\s+/g, ' ').trim();
   elements.previewCategory.textContent = `${tweet.primary_category} · ${tweet.secondary_category}`;
   elements.previewText.textContent = text || `A saved link from ${tweet.name || tweet.author}.`;
@@ -36,7 +46,7 @@ function showPreview(tweet, book) {
   elements.previewTags.replaceChildren(...(tweet.tags || []).slice(0, 3).map((tag) => {
     const span = document.createElement('span'); span.textContent = tag; return span;
   }));
-  elements.previewHint.textContent = touchMode ? 'Tap this book again to open it' : 'Click to open the full book';
+  elements.previewHint.textContent = touchMode ? 'Tap this book again to open it ↗' : 'Open this book ↗';
   elements.preview.hidden = false;
   elements.preview.classList.toggle('touch-preview', touchMode || window.innerWidth < 700);
   if (!elements.preview.classList.contains('touch-preview')) {
@@ -53,11 +63,19 @@ function showPreview(tweet, book) {
 }
 
 function hidePreview() {
+  clearTimeout(previewTimer);
+  previewOwner?.removeAttribute('aria-describedby');
+  previewOwner = null;
   elements.preview.hidden = true;
   elements.preview.classList.remove('touch-preview');
   elements.preview.style.removeProperty('left');
   elements.preview.style.removeProperty('top');
   state.previewedId = null;
+}
+
+function scheduleHidePreview() {
+  clearTimeout(previewTimer);
+  previewTimer = setTimeout(hidePreview, 180);
 }
 
 function groupTweets(tweets) {
@@ -92,26 +110,32 @@ function makeBook(tweet, index) {
   button.type = 'button';
   button.className = `book ${size}`;
   button.style.setProperty('--book-color', colorFor(tweet.primary_category));
-  button.style.transform = `rotate(${[-1.5,-.7,0,.4,1][index % 5]}deg)`;
+  button.style.setProperty('--book-rotation', `${[-1.2, -.5, 0, .5, 1][index % 5]}deg`);
   button.setAttribute('aria-label', `${title}, by ${tweet.author}, ${Number(tweet.bookmark_count || 0).toLocaleString()} saves`);
-  button.setAttribute('aria-describedby', 'book-preview');
-  button.title = `${title}\n${tweet.author} · ${Number(tweet.bookmark_count || 0).toLocaleString()} saves`;
+  const edition = document.createElement('span');
+  edition.className = 'book-edition';
+  edition.setAttribute('aria-hidden', 'true');
+  edition.textContent = tweet.content_type === 'article' ? 'COLLECTED ESSAYS' : 'SAVED THOUGHTS';
   const spine = document.createElement('span');
   spine.className = 'book-title';
   spine.textContent = title;
+  const author = document.createElement('span');
+  author.className = 'book-author';
+  author.textContent = tweet.name || tweet.author;
+  author.setAttribute('aria-hidden', 'true');
   const saves = document.createElement('span');
   saves.className = 'book-saves';
   saves.setAttribute('aria-hidden', 'true');
-  saves.textContent = `◆ ${formatCount(tweet.bookmark_count)}`;
-  button.append(spine, saves);
+  saves.textContent = `${formatCount(tweet.bookmark_count)} saves · ${tweet.content_type === 'article' ? 'An essay' : 'A saved idea'}`;
+  button.append(edition, spine, author, saves);
   if (!touchMode) {
     button.addEventListener('pointerenter', () => showPreview(tweet, button));
-    button.addEventListener('pointerleave', hidePreview);
-    button.addEventListener('focus', () => showPreview(tweet, button));
-    button.addEventListener('blur', hidePreview);
+    button.addEventListener('pointerleave', () => { if (document.activeElement !== button) scheduleHidePreview(); });
   }
-  button.addEventListener('click', () => {
-    if (touchMode && state.previewedId !== tweet.id) {
+  button.addEventListener('focus', () => showPreview(tweet, button));
+  button.addEventListener('blur', scheduleHidePreview);
+  button.addEventListener('click', (event) => {
+    if (touchMode && event.detail !== 0 && state.previewedId !== tweet.id) {
       state.previewedId = tweet.id;
       showPreview(tweet, button);
       return;
@@ -130,19 +154,32 @@ function render() {
   elements.empty.hidden = tweets.length > 0;
   elements.library.hidden = tweets.length === 0;
   elements.count.textContent = tweets.length.toLocaleString();
+  elements.countLabel.textContent = state.query || state.category !== 'all'
+    ? `${tweets.length === 1 ? 'idea' : 'ideas'} found`
+    : `saved ${tweets.length === 1 ? 'idea' : 'ideas'}`;
+  elements.collectionTitle.textContent = state.category === 'all' ? 'The collection' : state.category;
+  elements.random.disabled = tweets.length === 0;
+  elements.filter.value = state.category;
+  elements.nav.querySelectorAll('[data-category]').forEach((button) => {
+    const active = button.dataset.category === state.category;
+    button.classList.toggle('is-active', active);
+    if (active) button.setAttribute('aria-current', 'true');
+    else button.removeAttribute('aria-current');
+  });
 
-  Object.entries(rooms).forEach(([roomName, shelves], roomIndex) => {
+  Object.entries(rooms).sort(([a], [b]) => a.localeCompare(b)).forEach(([roomName, shelves]) => {
     const room = document.querySelector('#room-template').content.firstElementChild.cloneNode(true);
-    room.querySelector('.room-number').textContent = `Room ${String(roomIndex + 1).padStart(2, '0')}`;
-    room.querySelector('h2').textContent = roomName;
+    room.querySelector('.room-number').textContent = String(state.categories.indexOf(roomName) + 1).padStart(2, '0');
+    room.querySelector('h3').textContent = roomName;
     const roomTotal = Object.values(shelves).reduce((sum, shelf) => sum + shelf.length, 0);
+    room.classList.toggle('room-wide', Object.keys(shelves).length > 1 || roomTotal > 4 || state.category !== 'all');
     room.querySelector('.room-count').textContent = `${roomTotal} ${roomTotal === 1 ? 'book' : 'books'}`;
     const shelfContainer = room.querySelector('.shelves');
 
     Object.entries(shelves).forEach(([shelfName, shelfTweets]) => {
       const shelf = document.querySelector('#shelf-template').content.firstElementChild.cloneNode(true);
-      shelf.querySelector('h3').textContent = shelfName;
-      shelf.querySelector('.shelf-heading span').textContent = `${shelfTweets.length} ${shelfTweets.length === 1 ? 'volume' : 'volumes'} · newest first`;
+      shelf.querySelector('h4').textContent = shelfName;
+      shelf.querySelector('.shelf-heading span').textContent = 'Newest first';
       const books = shelf.querySelector('.books');
       shelfTweets.forEach((tweet, index) => books.append(makeBook(tweet, index)));
       shelfContainer.append(shelf);
@@ -163,23 +200,43 @@ function openBook(tweet) {
   }));
   elements.dialogLink.href = tweet.url;
   elements.detailCover.style.background = colorFor(tweet.primary_category);
-  elements.detailCover.querySelector('span').textContent = tweet.primary_category;
+  elements.coverTitle.textContent = title;
+  elements.coverCategory.textContent = tweet.primary_category;
   elements.copy.dataset.url = tweet.url;
   elements.copy.textContent = 'Copy link';
   elements.dialog.showModal();
+  elements.dialog.querySelector('.detail-content').scrollTop = 0;
 }
 
 function updateFilterOptions() {
-  const categories = [...new Set(state.tweets.map((tweet) => tweet.primary_category))].sort();
-  for (const category of categories) {
+  state.categories = [...new Set(state.tweets.map((tweet) => tweet.primary_category))].sort((a, b) => a.localeCompare(b));
+  elements.total.textContent = state.tweets.length.toLocaleString();
+  for (const category of state.categories) {
     const option = document.createElement('option'); option.value = category; option.textContent = category; elements.filter.append(option);
+    const button = document.createElement('button');
+    button.type = 'button'; button.className = 'category-button'; button.dataset.category = category;
+    const dot = document.createElement('span'); dot.className = 'category-dot'; dot.setAttribute('aria-hidden', 'true');
+    dot.style.setProperty('--category-color', colorFor(category));
+    const name = document.createElement('span'); name.className = 'category-name'; name.textContent = category;
+    const count = document.createElement('span'); count.className = 'category-total';
+    count.textContent = state.tweets.filter((tweet) => tweet.primary_category === category).length.toLocaleString();
+    button.append(dot, name, count); elements.categoryLinks.append(button);
   }
 }
 
 elements.search.addEventListener('input', (event) => { state.query = event.target.value; render(); });
 elements.filter.addEventListener('change', (event) => { state.category = event.target.value; render(); });
+elements.nav.addEventListener('click', (event) => {
+  const button = event.target.closest('[data-category]');
+  if (!button) return;
+  state.category = button.dataset.category; render();
+  const collection = document.querySelector('#collection');
+  if (collection.getBoundingClientRect().top < 0) collection.scrollIntoView({ block: 'start' });
+});
 elements.toggle.addEventListener('click', () => {
-  state.compact = !state.compact; elements.toggle.setAttribute('aria-pressed', String(state.compact)); render();
+  state.compact = !state.compact;
+  elements.toggle.setAttribute('aria-pressed', String(state.compact));
+  render();
 });
 elements.clear.addEventListener('click', () => { state.query = ''; state.category = 'all'; elements.search.value = ''; elements.filter.value = 'all'; render(); });
 elements.random.addEventListener('click', (event) => { event.preventDefault(); const books = filteredTweets(); if (books.length) openBook(books[Math.floor(Math.random() * books.length)]); });
@@ -190,12 +247,17 @@ elements.copy.addEventListener('click', async () => {
   catch { elements.copy.textContent = 'Copy failed'; }
 });
 document.addEventListener('keydown', (event) => {
-  if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); elements.search.focus(); }
+  if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k' && !elements.dialog.open) { event.preventDefault(); elements.search.focus(); }
+  if (event.key === 'Escape') hidePreview();
 });
 document.addEventListener('pointerdown', (event) => {
   if (touchMode && !event.target.closest('.book')) hidePreview();
 });
 window.addEventListener('scroll', () => { if (!touchMode) hidePreview(); }, { passive: true });
+window.addEventListener('resize', hidePreview);
+elements.preview.addEventListener('pointerenter', () => clearTimeout(previewTimer));
+elements.preview.addEventListener('pointerleave', scheduleHidePreview);
+if (!/Mac|iPhone|iPad/.test(navigator.platform)) document.querySelector('#search-shortcut').textContent = 'Ctrl K';
 
 try {
   const response = await fetch('./data/tweets.json');
