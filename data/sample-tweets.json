@@ -1,0 +1,78 @@
+[
+  {
+    "id": "sample-001",
+    "created_at": "2026-10-20T16:00:00Z",
+    "author": "@papertrail",
+    "name": "Paper Trail",
+    "url": "https://example.com/posts/sample-001",
+    "primary_category": "AI & ML Research",
+    "secondary_category": "Research Resources & Education",
+    "tags": ["research", "learning"],
+    "text": "A practical reading list for understanding modern language-model evaluation.",
+    "bookmark_count": 1840
+  },
+  {
+    "id": "sample-002",
+    "created_at": "2026-10-18T12:30:00Z",
+    "author": "@buildnotes",
+    "name": "Build Notes",
+    "url": "https://example.com/posts/sample-002",
+    "primary_category": "Engineering & Product",
+    "secondary_category": "Developer Tools & Infrastructure",
+    "tags": ["engineering", "tools"],
+    "text": "Seven small improvements that made our local development loop dramatically faster.",
+    "bookmark_count": 920
+  },
+  {
+    "id": "sample-003",
+    "created_at": "2026-10-15T09:15:00Z",
+    "author": "@quietsystems",
+    "name": "Quiet Systems",
+    "url": "https://example.com/posts/sample-003",
+    "primary_category": "Productivity & Knowledge",
+    "secondary_category": "Notes, Reading & Writing",
+    "tags": ["notes", "writing"],
+    "text": "The best note-taking system is the one that makes rediscovery effortless.",
+    "bookmark_count": 5100
+  },
+  {
+    "id": "sample-004",
+    "created_at": "2026-10-12T18:45:00Z",
+    "author": "@agentgarden",
+    "name": "Agent Garden",
+    "url": "https://example.com/posts/sample-004",
+    "primary_category": "Agents & Automation",
+    "secondary_category": "Coding Agents & Harnesses",
+    "tags": ["agents", "automation"],
+    "text": "A reliable agent harness needs observable state, narrow tools, and explicit recovery paths.",
+    "bookmark_count": 12400
+  },
+  {
+    "id": "sample-005",
+    "created_at": "2026-10-10T14:20:00Z",
+    "author": "@fieldmanual",
+    "name": "Field Manual",
+    "url": "https://example.com/articles/sample-005",
+    "primary_category": "Startups & Career",
+    "secondary_category": "Founder Strategy & Company Building",
+    "tags": ["startups", "strategy"],
+    "text": "Small teams win by choosing a narrow problem and learning faster than everyone else.",
+    "content_type": "article",
+    "article_title": "A Field Guide to Building With a Small Team",
+    "article_preview": "A practical guide to scope, customer learning, and maintaining momentum.",
+    "article_text": "Small teams do not win by imitating large organizations. They win by reducing coordination cost and learning directly from customers.\n\nStart with one painful workflow. Observe it closely, solve it completely, and measure whether people return without being reminded.\n\nThe goal is not to appear large. The goal is to compound insight faster than a larger competitor can coordinate.",
+    "bookmark_count": 7600
+  },
+  {
+    "id": "sample-006",
+    "created_at": "2026-10-08T11:00:00Z",
+    "author": "@weekendatlas",
+    "name": "Weekend Atlas",
+    "url": "https://example.com/posts/sample-006",
+    "primary_category": "Travel, Food & Local",
+    "secondary_category": "Food, Restaurants & Local Events",
+    "tags": ["travel", "food"],
+    "text": "A walkable weekend itinerary built around neighborhood bakeries and independent bookstores.",
+    "bookmark_count": 340
+  }
+]

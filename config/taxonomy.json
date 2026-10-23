@@ -1,0 +1,85 @@
+{
+  "fallback": ["Uncategorized", "Inbox"],
+  "categories": [
+    {
+      "primary": "AI & ML Research",
+      "shelves": [
+        {"name": "Reinforcement Learning & Post-training", "keywords": ["reinforcement learning", "post-training", "grpo", "ppo", "dpo", "sft", "reward", "self-play"]},
+        {"name": "Inference, Scaling & Compute", "keywords": ["inference", "serving", "gpu", "compute", "cuda", "latency", "throughput", "scaling", "quantization"]},
+        {"name": "Data, Evals & Research Environments", "keywords": ["dataset", "training data", "data broker", "eval", "benchmark", "environment", "annotation", "trace"]},
+        {"name": "Model Research & Architectures", "keywords": ["language model", "llm", "vlm", "pretraining", "architecture", "attention", "neural network", "fine-tuning"]},
+        {"name": "Research Resources & Education", "keywords": ["paper", "research", "textbook", "course", "tutorial", "from scratch"]}
+      ]
+    },
+    {
+      "primary": "Agents & Automation",
+      "shelves": [
+        {"name": "Coding Agents & Harnesses", "keywords": ["codex", "claude code", "coding agent", "agent harness", "cursor", "vibe coding"]},
+        {"name": "Computer Use & Browser Automation", "keywords": ["computer use", "browser automation", "browser harness", "desktop app", "cdp"]},
+        {"name": "Personal Agents, Memory & Workflows", "keywords": ["personal agent", "memory system", "openclaw", "hermes", "personalos", "research agent"]},
+        {"name": "Agent Reliability & Operations", "keywords": ["agent reliability", "sandbox", "firecracker", "agent security", "monitoring"]}
+      ]
+    },
+    {
+      "primary": "Engineering & Product",
+      "shelves": [
+        {"name": "Developer Tools & Infrastructure", "keywords": ["kubernetes", "kafka", "database", "backend", "serverless", "terminal", "docker", "infrastructure"]},
+        {"name": "Design, Frontend & Product Craft", "keywords": ["design", "frontend", "typography", "font", "swiftui", "user interface", "website"]},
+        {"name": "Mobile & Personal Software", "keywords": ["ios", "iphone", "mac app", "mobile app", "obsidian"]}
+      ]
+    },
+    {
+      "primary": "Startups & Career",
+      "shelves": [
+        {"name": "Founder Strategy & Company Building", "keywords": ["founder", "startup", "customers", "distribution", "company building", "go-to-market"]},
+        {"name": "Venture, Fundraising & Accelerators", "keywords": ["venture", "investor", "fundraising", "accelerator", "fellowship", "pre-seed", "series a"]},
+        {"name": "Hiring, Careers & Interviews", "keywords": ["hiring", "recruiting", "job", "career", "interview", "candidate"]},
+        {"name": "AI Industry & Business Models", "keywords": ["ai industry", "business model", "gross margin", "revenue", "enterprise"]}
+      ]
+    },
+    {
+      "primary": "Productivity & Knowledge",
+      "shelves": [
+        {"name": "Notes, Reading & Writing", "keywords": ["notes", "reading", "book", "essay", "writing", "transcript", "highlight"]},
+        {"name": "Workflows, Devices & Digital Minimalism", "keywords": ["productivity", "workflow", "dictation", "digital detox", "screen time", "keyboard"]},
+        {"name": "Communication & Personal Systems", "keywords": ["cold email", "imessage", "calendar", "personal system", "siri shortcut"]},
+        {"name": "Privacy & Digital Identity", "keywords": ["privacy", "digital footprint", "data broker listing", "delete account"]}
+      ]
+    },
+    {
+      "primary": "Health & Performance",
+      "shelves": [
+        {"name": "Sleep, Recovery & Longevity", "keywords": ["sleep", "sauna", "longevity", "recovery", "creatine", "workout"]},
+        {"name": "Attention, Habits & Wellbeing", "keywords": ["wellbeing", "habit", "attention", "digital detox", "mood"]}
+      ]
+    },
+    {
+      "primary": "Travel, Food & Local",
+      "shelves": [
+        {"name": "Travel & Transportation", "keywords": ["flight", "travel", "amtrak", "hotel", "ski"]},
+        {"name": "Food, Restaurants & Local Events", "keywords": ["restaurant", "food", "san francisco", "cowork", "event"]}
+      ]
+    },
+    {
+      "primary": "Entertainment & Gaming",
+      "shelves": [
+        {"name": "Anime, Film & Television", "keywords": ["anime", "film", "movie", "season", "episode", "netflix"]},
+        {"name": "Games & Interactive Worlds", "keywords": ["gaming", "minecraft", "game", "rpg", "apex"]}
+      ]
+    },
+    {
+      "primary": "Collectibles & Consumer",
+      "shelves": [
+        {"name": "Trading Cards & Collectibles", "keywords": ["tcg", "pokemon", "pokémon", "trading card", "promo card", "collectible"]},
+        {"name": "Products, Fashion & Gear", "keywords": ["adidas", "nike", "jacket", "shirt", "fashion", "microphone", "tablet"]}
+      ]
+    },
+    {
+      "primary": "Finance & Markets",
+      "shelves": [
+        {"name": "Investing, Taxes & Markets", "keywords": ["stock", "investing", "tax", "market", "returns", "prediction market"]},
+        {"name": "Consumer Money & Legal", "keywords": ["settlement", "payout", "subscription", "consumer money"]}
+      ]
+    }
+  ]
+}

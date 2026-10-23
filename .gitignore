@@ -1,0 +1,8 @@
+.DS_Store
+node_modules/
+dist/
+data/*.json
+!data/sample-tweets.json
+.env
+.env.*
+*.log
