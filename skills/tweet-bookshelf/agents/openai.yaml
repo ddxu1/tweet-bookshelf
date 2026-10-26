@@ -1,4 +1,4 @@
 interface:
   display_name: "Tweet Bookshelf"
-  short_description: "Turn exported X bookmarks into a categorized bookshelf site"
-  default_prompt: "Use $tweet-bookshelf to capture or validate an X bookmark export and build the bookshelf website."
+  short_description: "Build a bookshelf from X bookmarks and full X Articles"
+  default_prompt: "Use $tweet-bookshelf with the bundled article-enabled exporter to capture or validate my X bookmarks and X Articles and build a categorized bookshelf site."
